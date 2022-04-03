@@ -21,7 +21,7 @@ st.write("""
 st.write("""
 #### head of data
 """)
-rest_data=pd.read_csv('/Users/jayklarin/Documents/practicum_local/10_telling_story_with_data/rest_data_us.csv')
+rest_data=pd.read_csv('rest_data_us.csv')
 st.table(rest_data.head())
 
 # There are three records missing 'chain' data.  Let's look closer
