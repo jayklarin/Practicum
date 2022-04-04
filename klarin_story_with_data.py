@@ -14,13 +14,38 @@ import seaborn as sns
 
 
 st.write("""
+## Introduction
+""")
+st.write("""
+#### We have decided to open a small robot-run cafe in LA. The project is promising but expensive, so our partnership has decided to attract investors. We’re interested in the current market conditions -— will we be able to maintain our success when the novelty of robot waiters wears off?
+""")
+st.write("""
+#### Let's put on our analytics guru hat and prepare some market research using open-source data on restaurants in LA we have acquired.
+""")
+
+st.write("""
+## **rest_data_us.csv**
+
+- **id** — unique identifier
+    
+- **object_name** — establishment name
+    
+- **address** — address
+    
+- **chain** — chain establishment (True/False)
+    
+- **object_type** — establishment type
+    
+- **number** — number of seats
+""")
+
+st.write("""
 ## Reading info on our dataset
 """)
 st.write("""
 #### head of data
 """)
 rest_data=pd.read_csv('rest_data_us.csv')
-
 st.table(rest_data.head())
 
 # There are three records missing 'chain' data.  Let's look closer
@@ -190,4 +215,22 @@ street_count_seat_avg = street_seat_avg.merge(street_count,on=['street_name'])
 fig_street_count_seat_avg = sns.jointplot(x="rest_count", y="avg_seats", data=street_count_seat_avg, kind='reg') 
 #fig_street_count_seat_avg2 = 
 st.pyplot(fig_street_count_seat_avg)
+
+st.write("""
+## Overall Conclusions
+""")
+st.write("""
+#### Don't open a bakeries as an independent operator. The franchises will eat you alive. Open a restaurant, because more than half of them are independently owned and operated.
+""")
+st.write("""
+#### I don't think buying into an existing franchise with our gimmick as robots would find approval by the franchise.
+
+""")
+st.write("""
+#### Restaurants on average have just less than 50 seats each.  That seems like a sweet spot and a good place to start.
+""")
+
+st.write("""
+#### The busiest streets are the best place to get the most exposure. Starting on one of the top 10 streets would bring us a lot of foot traffic. Having our sign outside would give us free advertising. Our robots would give us a big boost in the beginning for the curiosity factor alone. Hopefully from there we could  run a sit down restaurant with very few employees, so even if we have a decrease in customers a few months after our initial opening, we will have lessened our need for weight staff, and eliminate our customers need to tip.
+""")
 
