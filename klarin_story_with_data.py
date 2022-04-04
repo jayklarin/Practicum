@@ -13,8 +13,6 @@ import usaddress
 import seaborn as sns
 
 
-
-
 st.write("""
 ## Reading info on our dataset
 """)
@@ -22,6 +20,7 @@ st.write("""
 #### head of data
 """)
 rest_data=pd.read_csv('rest_data_us.csv')
+
 st.table(rest_data.head())
 
 # There are three records missing 'chain' data.  Let's look closer
@@ -191,5 +190,4 @@ street_count_seat_avg = street_seat_avg.merge(street_count,on=['street_name'])
 fig_street_count_seat_avg = sns.jointplot(x="rest_count", y="avg_seats", data=street_count_seat_avg, kind='reg') 
 #fig_street_count_seat_avg2 = 
 st.pyplot(fig_street_count_seat_avg)
-
 
