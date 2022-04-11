@@ -53,14 +53,29 @@ no_chain_info = rest_data[rest_data['chain']!= True]
 no_chain_info = no_chain_info[no_chain_info['chain']!= False]
 rest_data['chain'] = rest_data['chain'].fillna(False)
 
+# Make dataset all uppercase
+rest_data['chain'] = rest_data['chain'].astype('bool')
+rest_data[['object_name','object_name','object_type']] = rest_data[['object_name','object_name','object_type']].apply(lambda x: x.astype(str).str.upper())
+rest_data_less_address = rest_data[['object_name','chain','object_type','number']]
+
+# Check for duplicates
+rest_data_dup = rest_data.groupby(['object_name','chain','object_type'])['number'].sum().reset_index()
+# my_text = There were , str(len(rest_data)) , now there are only , str(len(rest_data_dup)) ,  records.  We Consolidated  ,  str(len(rest_data) - len(rest_data_dup)) ,  records
+my_text = 'There were ', str(len(rest_data)) ,' now there are only ', str(len(rest_data_dup)) , ' records.  We Consolidated ' ,  str(len(rest_data) - len(rest_data_dup)) , ' records'
+st.write(my_text)
+st.write("""
+#### head of data with accurate counts - no address field - caused problems for the groupby
+""")
+st.table(rest_data_less_address.head())
+
 st.write("""
 ## Step 2a
 """)
 st.write("""
 #### Investigate the proportions of the various types of establishments. Plot a graph.
 """)
-establishment_type = rest_data.groupby(rest_data['object_type'])['id'].count().reset_index()
-establishment_type = establishment_type.rename(columns = {'object_type': 'establishment_type','id': 'establishment_count'})
+establishment_type = rest_data_less_address.groupby(rest_data['object_type'])['number'].count().reset_index()
+establishment_type = establishment_type.rename(columns = {'object_type': 'establishment_type','number': 'establishment_count'})
 fig_est_type = px.pie(establishment_type, values='establishment_count', names='establishment_type', title='Proportion of Types of Establishments')
 st.plotly_chart(fig_est_type)
 
@@ -71,8 +86,9 @@ st.write("""
 #### Investigate the proportions of the various types of chain and nonchain establishments. Plot a graph.
 """)
 
-chain_proportions = rest_data.groupby(rest_data['chain'])['id'].count().reset_index()
-chain_proportions = chain_proportions.rename(columns = {'chain': 'is_chain','id': 'is_chain_count'})
+chain_proportions = rest_data_less_address.groupby(rest_data['chain'])['number'].count().reset_index()
+chain_proportions = chain_proportions.rename(columns = {'chain': 'is_chain','number': 'is_chain_count'})
+chain_proportions['is_chain']=chain_proportions['is_chain'].apply(lambda x: 'Chain' if x==True else 'Non-Chain')
 fig_chain_proportions = px.pie(chain_proportions, values='is_chain_count', names='is_chain', title='Proportion of Chains')
 st.plotly_chart(fig_chain_proportions)
 
@@ -83,13 +99,14 @@ st.write("""
 #### Which type of establishment is typically a chain?
 """)
 
-rest_chain = rest_data.groupby(['object_type','chain'])['id'].count() #sum function
+rest_chain = rest_data_less_address.groupby(['object_type','chain'])['number'].count() #sum function
 rest_chain = rest_chain.reset_index(name='count') 
 rest_chain = rest_chain.rename(columns = {'object_type': 'rest_type','chain': 'is_chain'})
+rest_chain['is_chain']=rest_chain['is_chain'].apply(lambda x: 'Chain' if x==True else 'Non-Chain')
 
-fig_rest_chain = px.bar(rest_chain, x="rest_type", y="count", color="is_chain",barmode='group', title="Restaurant Type: Chain vs Non-Chain")
-fig_rest_chain.update_layout(autosize=False,width=800,height=600,)
-st.plotly_chart(fig_rest_chain)
+fig = px.bar(rest_chain, x="rest_type", y="count", color="is_chain",barmode='group', title="Restaurant Type: Chain vs Non-Chain")
+#fig.update_layout(autosize=False,width=800,height=600)
+st.plotly_chart(fig)
 
 st.write("""
 ## Step 2c Conclusion
@@ -104,17 +121,12 @@ st.write("""
 st.write("""
 #### What characterizes chains: many establishments with a small number of seats or a few establishments with a lot of seats?
 """)
-rest_all_count = rest_data.groupby([rest_data['object_name'],rest_data['chain']])['id'].count().reset_index(name='rest_count')
-rest_all_seat_avg = rest_data.groupby([rest_data['object_name']])['number'].mean().reset_index(name='avg_seats')
-rest_all_data = rest_all_count.merge(rest_all_seat_avg,on=['object_name'])
-rest_all_data = rest_all_data.sort_values(by='avg_seats', ascending=False)
-fig_rest_all_data = px.histogram(rest_all_data, x="rest_count", color="chain",log_y=True,title='Distrubution of Restaurants by Number of Locations')
-fig_rest_all_data.update_traces(opacity=0.75)
-st.plotly_chart(fig_rest_all_data)
+rest_data_less_address = rest_data_less_address.rename(columns = {'chain': 'is_chain','number': 'rest_count'})
+rest_data_less_address['is_chain']=rest_data_less_address['is_chain'].apply(lambda x: 'Chain' if x==True else 'Non-Chain')
 
-fig_seats_rest_all_data = px.histogram(rest_all_data, x="avg_seats", color="chain",title='Distrubution of Restaurants by Average Number of Seats')
-fig_seats_rest_all_data.update_traces(opacity=0.75)
-st.plotly_chart(fig_seats_rest_all_data)
+fig = px.histogram(rest_data_less_address, x="rest_count",log_y=True, color="is_chain",title='Distrubution of Seats by Number of Locations')
+fig.update_traces(opacity=0.75)
+st.plotly_chart(fig)
 
 st.write("""
 ## Step 2d Conclusion
@@ -133,8 +145,8 @@ st.write("""
 #### Determine the average number of seats for each type of restaurant. On average, which type of restaurant has the greatest number of seats? Plot graphs.
 """)
 
-rest_type_count = rest_data.groupby([rest_data['object_type']])['id'].count().reset_index(name='rest_count')
-rest_type_seat_avg = rest_data.groupby([rest_data['object_type']])['number'].mean().reset_index(name='avg_seats')
+rest_type_count = rest_data_less_address.groupby([rest_data_less_address['object_type']])['rest_count'].count().reset_index(name='rest_count')
+rest_type_seat_avg = rest_data_less_address.groupby([rest_data_less_address['object_type']])['rest_count'].mean().reset_index(name='avg_seats')
 
 fig_rest_type_seat_avg = px.bar(rest_type_seat_avg, x="avg_seats", y="avg_seats", color="object_type", title="Average Seats Per Category")
 fig_rest_type_seat_avg.update_layout(autosize=False,width=800,height=600,)
