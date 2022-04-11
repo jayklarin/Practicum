@@ -62,8 +62,8 @@ rest_data_less_address = rest_data[['object_name','chain','object_type','number'
 # Check for duplicates
 rest_data_dup = rest_data.groupby(['object_name','chain','object_type'])['number'].sum().reset_index()
 # my_text = There were , str(len(rest_data)) , now there are only , str(len(rest_data_dup)) ,  records.  We Consolidated  ,  str(len(rest_data) - len(rest_data_dup)) ,  records
-my_text = 'There were ', str(len(rest_data)) ,' now there are only ', str(len(rest_data_dup)) , ' records.  We Consolidated ' ,  str(len(rest_data) - len(rest_data_dup)) , ' records'
-st.write(my_text)
+#my_text = 'There were ', str(len(rest_data)) ,' now there are only ', str(len(rest_data_dup)) , ' records.  We Consolidated ' ,  str(len(rest_data) - len(rest_data_dup)) , ' records'
+#st.write(my_text)
 st.write("""
 #### head of data with accurate counts - no address field - caused problems for the groupby
 """)
