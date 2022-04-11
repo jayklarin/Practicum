@@ -45,6 +45,7 @@ st.write("""
 st.write("""
 #### head of data
 """)
+
 rest_data=pd.read_csv('rest_data_us.csv')
 st.table(rest_data.head())
 
