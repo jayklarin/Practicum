@@ -47,7 +47,7 @@ st.write("""
 """)
 
 rest_data=pd.read_csv('rest_data_us.csv')
-sst.table(rest_data.head())
+st.table(rest_data.head())
 
 # There are three records missing 'chain' data.  Let's look closer
 no_chain_info = rest_data[rest_data['chain']!= True]
