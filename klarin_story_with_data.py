@@ -56,7 +56,7 @@ rest_data['chain'] = rest_data['chain'].fillna(False)
 
 # Make dataset all uppercase
 rest_data['chain'] = rest_data['chain'].astype('bool')
-rest_data[['object_name','object_name','object_type']] = rest_data[['object_name','object_name','object_type']].apply(lambda x: x.astype(str).str.upper())
+rest_data[['object_name','address','object_type']] = rest_data[['object_name','address','object_type']].apply(lambda x: x.astype(str).str.upper())
 rest_data_less_address = rest_data[['object_name','chain','object_type','number']]
 
 # Check for duplicates
